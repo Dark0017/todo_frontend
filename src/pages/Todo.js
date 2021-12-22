@@ -36,8 +36,13 @@ const Todo = () => {
   const tasks = useSelector(selectTodos);
   const taskStatus = useSelector(selectTodoStatus);
   const boardStatus = useSelector(selectBoardStatus);
-  const [activeBoard, setActiveBoard] = useState(boards[0]);
-  const [activeTask, setActiveTask] = useState(tasks[0]);
+  const [activeBoard, setActiveBoard] = useState({ id: 0, title: "default" });
+  const [activeTask, setActiveTask] = useState({
+    id: 0,
+    boardId: 0,
+    title: "default",
+    description: "default",
+  });
   const [taskInput, setTaskInput] = useState("");
   const [editableBoard, setEditableBoard] = useState(false);
   const [editBoardState, setEditBoardState] = useState("");
@@ -67,19 +72,23 @@ const Todo = () => {
   };
 
   useEffect(() => {
+    dispatch(fetchBoards());
+  }, [dispatch]);
+
+  useEffect(() => {
+    setActiveBoard(boards[0]);
+  }, [boards]);
+
+  useEffect(() => {
     setActiveTask(tasks[0]);
   }, [tasks]);
 
   useEffect(() => {
-    dispatch(fetchBoards());
-  });
-  useEffect(() => {
-    setEditBoardState(activeBoard?.title);
-    dispatch(getTodos({ boardId: activeBoard?.id }));
+    if (activeBoard) {
+      setEditBoardState(activeBoard?.title);
+      dispatch(getTodos({ boardId: activeBoard?.id }));
+    }
   }, [activeBoard, dispatch]);
-  useEffect(() => {
-    setActiveBoard(boards[0]);
-  }, [boards]);
   return (
     <Container
       style={{
@@ -98,10 +107,10 @@ const Todo = () => {
       <Header as="h1" style={{ paddingTop: "30px", width: "100%" }}>
         To-Do App
       </Header>
-      <Menu tabular collapsing style={{ width: "100%" }}>
+      <Menu tabular style={{ width: "100%" }}>
         {boards.map((board, idx) => (
           <Menu.Item
-            id={idx}
+            key={board.id}
             active={activeBoard?.id === board.id}
             onClick={() => setActiveBoard(board)}
           >
