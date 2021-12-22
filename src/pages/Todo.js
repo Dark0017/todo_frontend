@@ -7,10 +7,12 @@ import {
   Form,
   Button,
   Icon,
+  Input,
 } from "semantic-ui-react";
 import TaskItem from "../components/TaskItem";
 import { useForm } from "react-hook-form";
 import TaskCard from "../components/TaskCard";
+import CreateBoardModal from "../components/CreateBoardModal";
 
 const Todo = () => {
   const [boards, setBoards] = useState([
@@ -32,31 +34,42 @@ const Todo = () => {
       isComplete: true,
     },
   ]);
-  const [activeBoard, setActiveBoard] = useState("default");
+  const [activeBoard, setActiveBoard] = useState(boards[0]);
   const [activeTask, setActiveTask] = useState(tasks[0]);
   const [taskInput, setTaskInput] = useState("");
+  const [editableBoard, setEditableBoard] = useState(false);
+  const [editBoardState, setEditBoardState] = useState("");
 
   const { handleSubmit } = useForm();
-  const onSubmit = () => addTask();
 
-  const addTask = (title) => {
+  //add Task function
+  const addTask = () => {
     const temp = {
-      id: (tasks.length + 1).toString(),
+      boardId: activeBoard?.id,
       title: taskInput,
       description: "",
-      isComplete: false,
     };
     createTask(temp);
   };
+
+  //add Task api call + retrieval
   const createTask = (task) => {
     //save to DB
-    setTasks([...tasks.concat([task])]);
+    console.log(task);
+
+    //update redux
+    //setTasks([...tasks.concat([task])]);
   };
 
+  //delete board api call
   const deleteBoard = (boardId) => {
+    //update db
+    console.log("Deleted", boardId);
+
     //delete tasks
     //delete boards
 
+    //update redux
     setBoards([
       ...boards.filter((board) => {
         if (board.id !== boardId) return true;
@@ -65,22 +78,47 @@ const Todo = () => {
     ]);
   };
 
+  //editBoard Function
+  const editBoard = () => {
+    const temp = {
+      id: activeBoard?.id,
+      title: editBoardState,
+    };
+
+    updateBoard(temp);
+  };
+
+  //editBoard API call
+  const updateBoard = (board) => {
+    //update db
+    console.log(board);
+    setEditableBoard(!editableBoard);
+
+    //update redux
+  };
   return (
-    <Container style={{ height: "100vh" }}>
-      <Header as="h1" style={{ marginTop: "30px" }}>
+    <Container
+      style={{
+        width: "75vw",
+        height: "100vh",
+        minHeight: "100vh",
+        boxSizing: "border-box",
+        overflowX: "hidden",
+        overflowY: "hidden",
+        padding: "10px",
+
+        //overflow: "scroll",
+      }}
+    >
+      <Header as="h1" style={{ paddingTop: "30px", width: "100%" }}>
         To-Do App
       </Header>
-      <Menu tabular collapsing>
-        <Menu.Item
-          name="default"
-          active={activeBoard === "default"}
-          onClick={() => setActiveBoard("default")}
-        />
+      <Menu tabular collapsing style={{ width: "100%" }}>
         {boards.map((board, idx) => (
           <Menu.Item
             id={idx}
-            active={activeBoard === board.title}
-            onClick={() => setActiveBoard(board.title)}
+            active={activeBoard?.id === board.id}
+            onClick={() => setActiveBoard(board)}
           >
             {board.title}
             <Button
@@ -97,12 +135,10 @@ const Todo = () => {
             </Button>
           </Menu.Item>
         ))}
-        <Button icon style={{ padding: "0px", backgroundColor: "transparent" }}>
-          <Icon name="plus" />
-        </Button>
+        <CreateBoardModal boards={boards} setBoards={setBoards} />
       </Menu>
-      <Grid style={{ height: "100%" }} divided>
-        <Grid.Row>
+      <Grid style={{ height: "100%", overflowY: "scroll" }} divided>
+        <Grid.Row style={{ padding: "10px 5px 10px 5px" }}>
           <Grid.Column width={5}>
             <Header as="h3">New Tasks</Header>
             {tasks.map(
@@ -113,14 +149,62 @@ const Todo = () => {
                     tasks={tasks}
                     setTasks={setTasks}
                     setActiveTask={setActiveTask}
+                    key={task.id}
                   />
                 )
             )}
           </Grid.Column>
-          <Grid.Column width={6}>
-            <Header as="h3">{activeBoard} View</Header>
+          <Grid.Column width={6} style={{ height: "100%" }}>
+            <Header
+              as="h3"
+              style={{
+                height: "25px",
+              }}
+            >
+              {editableBoard ? (
+                <Input
+                  placeholder={"Edit board name"}
+                  value={editBoardState}
+                  onChange={(e, { name, value }) => setEditBoardState(value)}
+                  style={{
+                    height: "25px",
+                  }}
+                />
+              ) : (
+                activeBoard?.title + " View"
+              )}
+              {editableBoard ? (
+                <Button
+                  size="mini"
+                  icon
+                  style={{
+                    backgroundColor: "transparent",
+                    padding: "0px 0px 0px 0px",
+                    marginLeft: "15px",
+                    fontSize: "1.2rem",
+                  }}
+                  onClick={() => editBoard()}
+                >
+                  <Icon name="check" />
+                </Button>
+              ) : (
+                <Button
+                  size="mini"
+                  icon
+                  style={{
+                    backgroundColor: "transparent",
+                    padding: "0px 0px 0px 0px",
+                    marginLeft: "15px",
+                    fontSize: "1.2rem",
+                  }}
+                  onClick={() => setEditableBoard(!editableBoard)}
+                >
+                  <Icon name="pencil" />
+                </Button>
+              )}
+            </Header>
             <Form
-              onSubmit={handleSubmit(onSubmit)}
+              onSubmit={handleSubmit(addTask)}
               style={{
                 width: "100%",
                 marginLeft: "0px",

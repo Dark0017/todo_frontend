@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Grid,
   Header,
@@ -13,9 +13,30 @@ const TaskCard = ({ activeTask }) => {
   const [titleState, setTitleState] = useState(activeTask.title);
   const [descState, setDescState] = useState(activeTask.description);
 
-  const onSubmit = () => {
-    console.log(titleState, descState);
+  //editCard function
+  const editTodo = () => {
+    const temp = {
+      title: titleState,
+      description: descState,
+    };
+    updateTodo(temp);
+    setEditable(false);
   };
+
+  //editCard API call
+  const updateTodo = (todo) => {
+    //save to db
+    console.log(activeTask.id, "updates");
+    console.log(todo);
+    //update redux
+    setTitleState(activeTask.title);
+    setDescState(activeTask.description);
+  };
+
+  useEffect(() => {
+    setTitleState(activeTask.title);
+    setDescState(activeTask.description);
+  }, [activeTask]);
   return (
     <Segment style={{ textAlign: "left" }}>
       <Grid>
@@ -70,7 +91,7 @@ const TaskCard = ({ activeTask }) => {
       ) : (
         activeTask.description
       )}
-      <Grid>
+      <Grid style={{ height: "55px", marginTop:"-5px" }}>
         <Grid.Row style={{ height: "55px" }}>
           <Grid.Column width={8}>
             <Button
@@ -88,19 +109,21 @@ const TaskCard = ({ activeTask }) => {
             </Button>
           </Grid.Column>
           <Grid.Column width={8}>
-            <Button
-              size="mini"
-              icon
-              style={{
-                padding: "0px 0px 0px 0px",
-                width: "100%",
-                height: "100%",
-              }}
-              color="green"
-              onClick={() => onSubmit()}
-            >
-              <Icon name="check" />
-            </Button>
+            {editable && (
+              <Button
+                size="mini"
+                icon
+                style={{
+                  padding: "0px 0px 0px 0px",
+                  width: "100%",
+                  height: "100%",
+                }}
+                color="green"
+                onClick={() => editTodo()}
+              >
+                <Icon name="check" />
+              </Button>
+            )}
           </Grid.Column>
         </Grid.Row>
       </Grid>

@@ -2,6 +2,19 @@ import React from "react";
 import { Button, Grid, Checkbox, Icon } from "semantic-ui-react";
 
 const TaskItem = ({ task, setTasks, tasks, setActiveTask }) => {
+  const completeTask = (taskId) => {
+    //db update
+    console.log(taskId, "completed");
+
+    //update redux
+  };
+
+  const deleteTask = (taskId) => {
+    //db update
+    console.log(taskId, "Deleted");
+    //update redux
+  };
+
   return (
     <Grid columns={3}>
       <Grid.Row
@@ -11,34 +24,33 @@ const TaskItem = ({ task, setTasks, tasks, setActiveTask }) => {
           "justify-content": "flex-start",
           "align-items": "center",
           borderBottom: "1px solid #f3f3f3",
-          marginRight: "25px",
-          paddingRight: "10px",
+          margin: "0px 25px 0px 25px",
+          padding:"10px 10px 10px 0px"
+          // marginRight: "25px",
+          // paddingRight: "10px",
+          // marginleft: "25px",
+          // paddingleft: "10px",
         }}
-        key={task.id}
       >
-        <Grid.Column style={{ width: "35px" }}>
-          <Checkbox
-            style={{
-              width: "15px",
-              margin: "0px 0px 0px 0px",
-              display: task.isComplete ? "None" : "flex",
-            }}
-            onClick={() => {
-              setTasks(
-                [...tasks].map((obj) => {
-                  if (obj.id === task.id) return { ...obj, isComplete: true };
-                  else return obj;
-                })
-              );
-            }}
-          />
-        </Grid.Column>
+        {!task.isComplete && (
+          <Grid.Column style={{ width: "35px" }}>
+            <Checkbox
+              style={{
+                width: "15px",
+                margin: "0px",
+              }}
+              onClick={() => {
+                completeTask(task.id);
+              }}
+            />
+          </Grid.Column>
+        )}
         <Grid.Column style={{ width: "80px" }}>
           <Button
             as="h3"
             style={{
               backgroundColor: "transparent",
-              padding: "0px 0px 0px 0px",
+              padding: "0px",
               textAlign: "center",
             }}
             onClick={() => setActiveTask(task)}
@@ -56,6 +68,7 @@ const TaskItem = ({ task, setTasks, tasks, setActiveTask }) => {
               width: "23px",
               padding: "0px 0px 6px 0px",
             }}
+            onClick={() => deleteTask(task.id)}
           >
             <Icon name="delete" circular />
           </Button>
