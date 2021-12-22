@@ -1,4 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchBoards,
+  selectBoardError,
+  selectBoards,
+  selectBoardStatus,
+  editBoard,
+  deleteBoard,
+} from "../features/board/boardSlice";
+import {
+  createTodo,
+  getTodos,
+  selectTodos,
+  selectTodoStatus,
+  selectTodoError,
+} from "../features/todo/todoSlice";
 import {
   Container,
   Grid,
@@ -8,6 +24,8 @@ import {
   Button,
   Icon,
   Input,
+  Loader,
+  Dimmer,
 } from "semantic-ui-react";
 import TaskItem from "../components/TaskItem";
 import { useForm } from "react-hook-form";
@@ -15,25 +33,11 @@ import TaskCard from "../components/TaskCard";
 import CreateBoardModal from "../components/CreateBoardModal";
 
 const Todo = () => {
-  const [boards, setBoards] = useState([
-    { id: "01", title: "board1" },
-    { id: "02", title: "board2" },
-    { id: "03", title: "board3" },
-  ]);
-  const [tasks, setTasks] = useState([
-    {
-      id: "1",
-      title: "Dance",
-      description: "dance for 5 min",
-      isComplete: false,
-    },
-    {
-      id: "2",
-      title: "Sleep",
-      description: "slep for 5 hrs",
-      isComplete: true,
-    },
-  ]);
+  const dispatch = useDispatch();
+  const boards = useSelector(selectBoards);
+  const tasks = useSelector(selectTodos);
+  const taskStatus = useSelector(selectTodoStatus);
+  const boardStatus = useSelector(selectBoardStatus);
   const [activeBoard, setActiveBoard] = useState(boards[0]);
   const [activeTask, setActiveTask] = useState(tasks[0]);
   const [taskInput, setTaskInput] = useState("");
@@ -49,53 +53,36 @@ const Todo = () => {
       title: taskInput,
       description: "",
     };
-    createTask(temp);
+    dispatch(createTodo({ body: temp }));
   };
 
-  //add Task api call + retrieval
-  const createTask = (task) => {
-    //save to DB
-    console.log(task);
-
-    //update redux
-    //setTasks([...tasks.concat([task])]);
+  const removeBoard = (boardId) => {
+    dispatch(deleteBoard({ id: boardId }));
   };
 
-  //delete board api call
-  const deleteBoard = (boardId) => {
-    //update db
-    console.log("Deleted", boardId);
-
-    //delete tasks
-    //delete boards
-
-    //update redux
-    setBoards([
-      ...boards.filter((board) => {
-        if (board.id !== boardId) return true;
-        else return false;
-      }),
-    ]);
-  };
-
-  //editBoard Function
-  const editBoard = () => {
+  const updateBoard = () => {
     const temp = {
       id: activeBoard?.id,
-      title: editBoardState,
+      body: { title: editBoardState },
     };
-
-    updateBoard(temp);
-  };
-
-  //editBoard API call
-  const updateBoard = (board) => {
-    //update db
-    console.log(board);
+    dispatch(editBoard(temp));
     setEditableBoard(!editableBoard);
-
-    //update redux
   };
+
+  useEffect(() => {
+    setActiveTask(tasks[0]);
+  }, [tasks]);
+
+  useEffect(() => {
+    dispatch(fetchBoards());
+  }, []);
+  useEffect(() => {
+    setEditBoardState(activeBoard?.title);
+    dispatch(getTodos({ boardId: activeBoard?.id }));
+  }, [activeBoard]);
+  useEffect(() => {
+    setActiveBoard(boards[0]);
+  }, [boards]);
   return (
     <Container
       style={{
@@ -110,6 +97,9 @@ const Todo = () => {
         //overflow: "scroll",
       }}
     >
+      <Dimmer active={taskStatus === "pending" || boardStatus === "pending"}>
+        <Loader />
+      </Dimmer>
       <Header as="h1" style={{ paddingTop: "30px", width: "100%" }}>
         To-Do App
       </Header>
@@ -129,13 +119,13 @@ const Todo = () => {
                 padding: "0px 0px 0px 0px",
                 marginLeft: "15px",
               }}
-              onClick={() => deleteBoard(board.id)}
+              onClick={() => removeBoard(board.id)}
             >
               <Icon name="delete" />
             </Button>
           </Menu.Item>
         ))}
-        <CreateBoardModal boards={boards} setBoards={setBoards} />
+        <CreateBoardModal boards={boards} />
       </Menu>
       <Grid style={{ height: "100%", overflowY: "scroll" }} divided>
         <Grid.Row style={{ padding: "10px 5px 10px 5px" }}>
@@ -146,8 +136,6 @@ const Todo = () => {
                 !task.isComplete && (
                   <TaskItem
                     task={task}
-                    tasks={tasks}
-                    setTasks={setTasks}
                     setActiveTask={setActiveTask}
                     key={task.id}
                   />
@@ -183,7 +171,7 @@ const Todo = () => {
                     marginLeft: "15px",
                     fontSize: "1.2rem",
                   }}
-                  onClick={() => editBoard()}
+                  onClick={() => updateBoard()}
                 >
                   <Icon name="check" />
                 </Button>
@@ -235,15 +223,10 @@ const Todo = () => {
           </Grid.Column>
           <Grid.Column width={5}>
             <Header as="h3">Completed Tasks</Header>
-            {tasks.map(
+            {tasks?.map(
               (task) =>
                 task.isComplete && (
-                  <TaskItem
-                    task={task}
-                    tasks={tasks}
-                    setTasks={setTasks}
-                    setActiveTask={setActiveTask}
-                  />
+                  <TaskItem task={task} setActiveTask={setActiveTask} />
                 )
             )}
           </Grid.Column>

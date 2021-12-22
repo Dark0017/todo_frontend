@@ -1,17 +1,17 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import { Button, Grid, Checkbox, Icon } from "semantic-ui-react";
+import { completeTodo, deleteTodo } from "../features/todo/todoSlice";
+const TaskItem = ({ task, setActiveTask }) => {
+  const dispatch = useDispatch();
 
-const TaskItem = ({ task, setTasks, tasks, setActiveTask }) => {
   const completeTask = (taskId) => {
-    //db update
-    console.log(taskId, "completed");
-
-    //update redux
+    dispatch(completeTodo({ id: taskId, boardId: task.boardId }));
   };
 
   const deleteTask = (taskId) => {
     //db update
-    console.log(taskId, "Deleted");
+    dispatch(deleteTodo({ id: taskId, boardId: task.boardId }));
     //update redux
   };
 
@@ -25,7 +25,7 @@ const TaskItem = ({ task, setTasks, tasks, setActiveTask }) => {
           "align-items": "center",
           borderBottom: "1px solid #f3f3f3",
           margin: "0px 25px 0px 25px",
-          padding:"10px 10px 10px 0px"
+          padding: "10px 10px 10px 0px",
           // marginRight: "25px",
           // paddingRight: "10px",
           // marginleft: "25px",

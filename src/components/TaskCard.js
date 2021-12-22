@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import {
   Grid,
   Header,
@@ -8,34 +9,38 @@ import {
   Input,
   TextArea,
 } from "semantic-ui-react";
+import { editTodo } from "../features/todo/todoSlice";
 const TaskCard = ({ activeTask }) => {
   const [editable, setEditable] = useState(false);
-  const [titleState, setTitleState] = useState(activeTask.title);
-  const [descState, setDescState] = useState(activeTask.description);
+  const [titleState, setTitleState] = useState(activeTask?.title);
+  const [descState, setDescState] = useState(activeTask?.description);
 
+  const dispatch = useDispatch();
   //editCard function
-  const editTodo = () => {
+  const updateTodo = () => {
     const temp = {
-      title: titleState,
-      description: descState,
+      title: titleState?titleState:"",
+      description: descState?descState:"",
     };
-    updateTodo(temp);
+    dispatch(
+      editTodo({ boardId: activeTask.boardId, id: activeTask.id, body: temp })
+    );
     setEditable(false);
   };
 
   //editCard API call
-  const updateTodo = (todo) => {
-    //save to db
-    console.log(activeTask.id, "updates");
-    console.log(todo);
-    //update redux
-    setTitleState(activeTask.title);
-    setDescState(activeTask.description);
-  };
+  // const updateTodo = (todo) => {
+  //   //save to db
+  //   console.log(activeTask?.id, "updates");
+  //   console.log(todo);
+  //   //update redux
+  //   setTitleState(activeTask?.title);
+  //   setDescState(activeTask?.description);
+  // };
 
   useEffect(() => {
-    setTitleState(activeTask.title);
-    setDescState(activeTask.description);
+    setTitleState(activeTask?.title);
+    setDescState(activeTask?.description);
   }, [activeTask]);
   return (
     <Segment style={{ textAlign: "left" }}>
@@ -51,7 +56,7 @@ const TaskCard = ({ activeTask }) => {
             <Grid.Column as="h4" style={{ height: "25px", width: "30px" }}>
               {editable ? (
                 <Input
-                  placeholder={activeTask.title}
+                  placeholder={activeTask?.title}
                   style={{
                     height: "25px",
                   }}
@@ -59,16 +64,16 @@ const TaskCard = ({ activeTask }) => {
                   onChange={(e, { name, value }) => setTitleState(value)}
                 />
               ) : (
-                activeTask.title
+                activeTask?.title
               )}
             </Grid.Column>
             <Grid.Column
               style={{
                 textAlign: "right",
-                color: activeTask.isComplete ? "green" : "red",
+                color: activeTask?.isComplete ? "green" : "red",
               }}
             >
-              {activeTask.isComplete ? "Completed" : "Incomplete"}
+              {activeTask?.isComplete ? "Completed" : "Incomplete"}
             </Grid.Column>
           </Grid.Row>
         )}
@@ -78,7 +83,7 @@ const TaskCard = ({ activeTask }) => {
       </Header>
       {editable ? (
         <TextArea
-          placeholder={activeTask.description}
+          placeholder={activeTask?.description}
           style={{
             height: "100%",
             width: "100%",
@@ -89,9 +94,9 @@ const TaskCard = ({ activeTask }) => {
           onChange={(e, { name, value }) => setDescState(value)}
         />
       ) : (
-        activeTask.description
+        activeTask?.description
       )}
-      <Grid style={{ height: "55px", marginTop:"-5px" }}>
+      <Grid style={{ height: "55px", marginTop: "-5px" }}>
         <Grid.Row style={{ height: "55px" }}>
           <Grid.Column width={8}>
             <Button
@@ -119,7 +124,7 @@ const TaskCard = ({ activeTask }) => {
                   height: "100%",
                 }}
                 color="green"
-                onClick={() => editTodo()}
+                onClick={() => updateTodo()}
               >
                 <Icon name="check" />
               </Button>
