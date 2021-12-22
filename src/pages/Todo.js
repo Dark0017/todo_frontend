@@ -72,11 +72,11 @@ const Todo = () => {
 
   useEffect(() => {
     dispatch(fetchBoards());
-  }, []);
+  });
   useEffect(() => {
     setEditBoardState(activeBoard?.title);
     dispatch(getTodos({ boardId: activeBoard?.id }));
-  }, [activeBoard]);
+  }, [activeBoard, dispatch]);
   useEffect(() => {
     setActiveBoard(boards[0]);
   }, [boards]);
