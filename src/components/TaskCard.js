@@ -16,7 +16,6 @@ const TaskCard = ({ activeTask }) => {
   const [descState, setDescState] = useState(activeTask?.description);
 
   const dispatch = useDispatch();
-  //editCard function
   const updateTodo = () => {
     const temp = {
       title: titleState?titleState:"",
@@ -27,16 +26,6 @@ const TaskCard = ({ activeTask }) => {
     );
     setEditable(false);
   };
-
-  //editCard API call
-  // const updateTodo = (todo) => {
-  //   //save to db
-  //   console.log(activeTask?.id, "updates");
-  //   console.log(todo);
-  //   //update redux
-  //   setTitleState(activeTask?.title);
-  //   setDescState(activeTask?.description);
-  // };
 
   useEffect(() => {
     setTitleState(activeTask?.title);

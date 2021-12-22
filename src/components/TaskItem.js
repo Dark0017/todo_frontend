@@ -10,9 +10,7 @@ const TaskItem = ({ task, setActiveTask }) => {
   };
 
   const deleteTask = (taskId) => {
-    //db update
     dispatch(deleteTodo({ id: taskId, boardId: task.boardId }));
-    //update redux
   };
 
   return (
@@ -26,10 +24,6 @@ const TaskItem = ({ task, setActiveTask }) => {
           borderBottom: "1px solid #f3f3f3",
           margin: "0px 25px 0px 25px",
           padding: "10px 10px 10px 0px",
-          // marginRight: "25px",
-          // paddingRight: "10px",
-          // marginleft: "25px",
-          // paddingleft: "10px",
         }}
       >
         {!task.isComplete && (

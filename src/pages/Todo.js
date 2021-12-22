@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchBoards,
-  selectBoardError,
   selectBoards,
   selectBoardStatus,
   editBoard,
@@ -13,7 +12,6 @@ import {
   getTodos,
   selectTodos,
   selectTodoStatus,
-  selectTodoError,
 } from "../features/todo/todoSlice";
 import {
   Container,
@@ -46,7 +44,6 @@ const Todo = () => {
 
   const { handleSubmit } = useForm();
 
-  //add Task function
   const addTask = () => {
     const temp = {
       boardId: activeBoard?.id,
@@ -93,8 +90,6 @@ const Todo = () => {
         overflowX: "hidden",
         overflowY: "hidden",
         padding: "10px",
-
-        //overflow: "scroll",
       }}
     >
       <Dimmer active={taskStatus === "pending" || boardStatus === "pending"}>

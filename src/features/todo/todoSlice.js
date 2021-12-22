@@ -9,12 +9,6 @@ export const todoSlice = createSlice({
     error: null,
   },
   reducers: {
-    get: (state, action) => {
-      //fetch all todos for a boardId server
-    },
-    getAll: (state) => {
-      //fetch all todos
-    },
   },
   extraReducers: (builder) => {
     builder

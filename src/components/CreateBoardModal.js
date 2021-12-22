@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Modal, Header, Form, Button, Icon } from "semantic-ui-react";
 import { useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
-import { createBoard, fetchBoards } from "../features/board/boardSlice";
+import { createBoard } from "../features/board/boardSlice";
 
 const CreateBoardModal = ({ boards }) => {
   const [open, setOpen] = useState(false);
@@ -10,7 +10,6 @@ const CreateBoardModal = ({ boards }) => {
   const { handleSubmit } = useForm();
   const dispatch = useDispatch();
 
-  //add board function
   const addBoard = () => {
     const temp = {
       title: titleInput,
@@ -18,16 +17,6 @@ const CreateBoardModal = ({ boards }) => {
     dispatch(createBoard({ body: temp }));
     setOpen(false);
   };
-
-  //add board api call
-  // const createBoard = (board) => {
-  //   //save to DB
-  //   console.log(board);
-
-  //   setOpen(false);
-  //   //update redux
-  //   setBoards([...boards.concat([board])]);
-  // };
 
   return (
     <Modal

@@ -8,9 +8,6 @@ export const boardSlice = createSlice({
     error: null,
   },
   reducers: {
-    get: (state) => {
-      //fetch all boards from server
-    },
   },
   extraReducers: (builder) => {
     builder
